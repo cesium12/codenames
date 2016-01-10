@@ -3,24 +3,14 @@
 <head>
   <title>Nodenames</title>
   <link rel="stylesheet" href="/style.css">
-  <script>var admin = {{admin}};</script>
+  <script>var admin = {{admin}}, state = {{&state}};</script>
   <script src="/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/game.js"></script>
 </head>
 <body>
   <section class="pane" id="board">
-    <table>
-    {{#board}}
-      <tr>
-      {{#row}}
-        <td class="shadow">
-        {{word}}
-        </td>
-      {{/row}}
-      </tr>
-    {{/board}}
-    </table>
+    <table></table>
   </section>
   <section class="pane" id="control">
     <section id="wrapper">

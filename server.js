@@ -25,19 +25,24 @@ if (!wordlist) {
 var words = fs.readFileSync(wordlist, 'utf8').split('\n');
 words = words.filter(function(word) { return word; });
 words.sort(function() { return Math.random() - 0.5; });
-var board = [];
-for (var i = 0; i < 5; ++i) {
-  var row = [];
-  for (var j = 0; j < 5; ++j) {
-    row.push({word: words[5 * i + j]});
-  }
-  board.push({row: row});
+var identities = ['assassin'];
+for (var i = 0; i < 9; ++i) { identities.push('red');     }
+for (var i = 0; i < 8; ++i) { identities.push('blue');    }
+for (var i = 0; i < 7; ++i) { identities.push('neutral'); }
+identities.sort(function() { return Math.random() - 0.5; });
+var state = {words: []};
+for (var i = 0; i < 25; ++i) {
+  state.words.push({
+    word: words[i],
+    identity: identities[i],
+    revealed: false
+  });
 }
 
 app.get('/', function(request, response) {
   response.render('game', {
     wordlist: path.basename(wordlist),
-    board: board,
+    state: JSON.stringify(state),
     admin: false
   });
 });
@@ -45,7 +50,7 @@ app.get('/', function(request, response) {
 app.get('/spymaster', function(request, response) {
   response.render('game', {
     wordlist: path.basename(wordlist),
-    board: board,
+    state: JSON.stringify(state),
     admin: true
   });
 });

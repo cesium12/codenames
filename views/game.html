@@ -9,12 +9,22 @@
   <script src="/game.js"></script>
 </head>
 <body>
-  <form class="shadow" id="header">
+  <form id="header">
     <table>
       <tr>
         <td>{{wordlist}}</td>
-        <td><input type="text" required size="32" placeholder="Clue..." name="clue"></td>
-        <td><input type="number" required placeholder="Words..." name="words"></td>
+        <td>
+          <div class="tooltip">
+            <input type="text" required size="32" placeholder="Clue..." name="clue">
+            <aside>your clue word</aside>
+          </div>
+        </td>
+        <td>
+          <div class="tooltip">
+            <input type="number" required placeholder="Words..." name="words">
+            <aside>the number of matching words (use any large number for &infin;)</aside>
+          </div>
+        </td>
       </tr>
     </table>
     <iframe></iframe>
@@ -25,7 +35,10 @@
   <section id="control">
     <section id="wrapper">
       <section id="self">
-        <input type="text" required placeholder="Your name..." class="shadow" id="name"><!--
+        <div class="tooltip">
+          <input type="text" required placeholder="Your name..." id="name">
+          <aside>enter your name and select a team</aside>
+        </div><!--
         --><input type="radio" class="team" name="team" id="red"><!--
         --><label for="red" class="shadow"></label><!--
         --><input type="radio" class="team" name="team" id="blue"><!--
@@ -36,7 +49,7 @@
           <tbody></tbody>
         </table>
         <form>
-          <input type="text" placeholder="Chat..." class="shadow" name="message" id="message">
+          <input type="text" placeholder="Chat..." name="message" id="message">
         </form>
       </section>
     </section>

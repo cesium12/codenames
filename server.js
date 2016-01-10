@@ -7,6 +7,7 @@ var express = require('express'),
 var app = express();
 app.set('view engine', 'html');
 app.engine('html', require('hogy').init());
+app.use(require('body-parser').urlencoded({extended: false}));
 app.use(express.static(__dirname + '/static'));
 app.use(require('morgan')('dev'))
 /*app.use(function(request, response) {
@@ -38,6 +39,7 @@ for (var i = 0; i < 25; ++i) {
     revealed: false
   });
 }
+console.log(state);
 
 app.get('/', function(request, response) {
   response.render('game', {
@@ -53,6 +55,12 @@ app.get('/spymaster', function(request, response) {
     state: JSON.stringify(state),
     admin: true
   });
+});
+
+app.post('/commit', function(request, response) {
+  console.log(request.body, request.query);
+  //io.sockets.emit('chat', state);
+  response.sendStatus(204);
 });
 
 io.sockets.on('connection', function(socket) {

@@ -9,50 +9,53 @@
   <script src="/game.js"></script>
 </head>
 <body>
-  <form id="header">
-    <table>
-      <tr>
-        <td>{{wordlist}}</td>
-        <td>
+  <form method="post" action="/commit" target="dummy">
+    <section id="header">
+      <table>
+        <tr>
+          <td>
+            {{wordlist}}
+            <input type="submit">
+            <iframe name="dummy"></iframe>
+          </td>
+          <td>
+            <div class="tooltip">
+              <input type="text" required size="32" placeholder="Clue..." name="clue">
+              <aside>your clue word</aside>
+            </div>
+          </td>
+          <td>
+            <div class="tooltip">
+              <input type="number" required placeholder="Words..." name="words">
+              <aside>the number of matching words (use any large number for &infin;)</aside>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </section>
+    <section id="board">
+      <table></table>
+    </section>
+    <section id="control">
+      <section id="wrapper">
+        <div id="self">
           <div class="tooltip">
-            <input type="text" required size="32" placeholder="Clue..." name="clue">
-            <aside>your clue word</aside>
-          </div>
-        </td>
-        <td>
-          <div class="tooltip">
-            <input type="number" required placeholder="Words..." name="words">
-            <aside>the number of matching words (use any large number for &infin;)</aside>
-          </div>
-        </td>
-      </tr>
-    </table>
-    <iframe></iframe>
-  </form>
-  <section id="board">
-    <table></table>
-  </section>
-  <section id="control">
-    <section id="wrapper">
-      <section id="self">
-        <div class="tooltip">
-          <input type="text" required placeholder="Your name..." id="name">
-          <aside>enter your name and select a team</aside>
-        </div><!--
-        --><input type="radio" class="team" name="team" id="red"><!--
-        --><label for="red" class="shadow"></label><!--
-        --><input type="radio" class="team" name="team" id="blue"><!--
-        --><label for="blue" class="shadow"></label>
-      </section>
-      <section id="chatbox">
-        <table>
-          <tbody></tbody>
-        </table>
-        <form>
-          <input type="text" placeholder="Chat..." name="message" id="message">
-        </form>
+            <input type="text" required placeholder="Your name..." name="name" id="name">
+            <aside>enter your name and select a team</aside>
+          </div><!--
+          --><input type="radio" class="team" name="team" value="red" id="red"><!--
+          --><label for="red" class="shadow"></label><!--
+          --><input type="radio" class="team" name="team" value="blue" id="blue"><!--
+          --><label for="blue" class="shadow"></label>
+        </div>
+        <div id="chatbox">
+          <table>
+            <tbody></tbody>
+          </table>
+          <input type="text" placeholder="Chat...">
+        </div>
       </section>
     </section>
-  </section>
+  </form>
 </body>
 </html>

@@ -9,7 +9,6 @@ $(function() {
 
 var chatlist = $('#chatbox table'),
     chatbody = $('#chatbox tbody'),
-    chatform = $('#chatbox form'),
     chattext = $('#chatbox input'),
     board = $('#board table'),
     event = io.connect();
@@ -50,15 +49,17 @@ event.on('chat', chatScroll(function(data) {
            .toggleClass('admin', data.admin)
            .appendTo(chatbody);
 }));
-chatform.submit(function(evt) {
-  evt.preventDefault();
-  if (chattext.val()) {
-    event.emit('say', {
-      sender: localStorage.name,
-      message: chattext.val(),
-      admin: admin
-    });
-    chattext.val('');
+chattext.keypress(function(evt) {
+  if (evt.which == 13) {
+    evt.preventDefault();
+    if (chattext.val().trim()) {
+      event.emit('say', {
+        sender: localStorage.name,
+        message: chattext.val(),
+        admin: admin
+      });
+      chattext.val('');
+    }
   }
 });
 

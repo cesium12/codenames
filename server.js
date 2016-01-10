@@ -31,20 +31,28 @@ for (var i = 0; i < 9; ++i) { identities.push('red');     }
 for (var i = 0; i < 8; ++i) { identities.push('blue');    }
 for (var i = 0; i < 7; ++i) { identities.push('neutral'); }
 identities.sort(function() { return Math.random() - 0.5; });
-var state = {words: []};
+var game = {
+  team: 'red',
+  state: 'clue',
+  red: 9,
+  blue: 8,
+  clue: null,
+  count: null,
+  words: []
+};
 for (var i = 0; i < 25; ++i) {
-  state.words.push({
+  game.words.push({
     word: words[i],
     identity: identities[i],
     revealed: false
   });
 }
-console.log(state);
+console.log(game);
 
 app.get('/', function(request, response) {
   response.render('game', {
     wordlist: path.basename(wordlist),
-    state: JSON.stringify(state),
+    game: JSON.stringify(game),
     admin: false
   });
 });
@@ -52,14 +60,68 @@ app.get('/', function(request, response) {
 app.get('/spymaster', function(request, response) {
   response.render('game', {
     wordlist: path.basename(wordlist),
-    state: JSON.stringify(state),
+    game: JSON.stringify(game),
     admin: true
   });
 });
 
-app.post('/commit', function(request, response) {
-  console.log(request.body, request.query);
-  //io.sockets.emit('chat', state);
+app.post('/clue', function(request, response) {
+  console.log(request.body);
+  if (game.team == request.body.team && game.state == 'clue') {
+    game.state = 'guess';
+    game.clue = request.body.clue;
+    game.count = request.body.count;
+    io.sockets.emit('clue', {
+      game: game,
+      sender: request.body.name,
+      team: request.body.team,
+      admin: true
+    });
+  }
+  response.sendStatus(204);
+});
+
+app.post('/guess', function(request, response) {
+  console.log(request.body);
+  if (game.team == request.body.team && game.state == 'guess') {
+    var other = {red: 'blue', blue: 'red'};
+    var word = game.words[request.body.index];
+    var win = null;
+    if (!word) {
+      game.count = -1;
+    } else if (!word.revealed) {
+      word.revealed = true;
+      if (word.identity in game) {
+        --game[word.identity];
+        if (game[word.identity] <= 0) {
+          win = word.identity;
+        }
+      }
+      if (word.identity == game.team) {
+        --game.count;
+      } else if (word.identity == 'assassin') {
+        win = other[game.team];
+      } else {
+        game.count = -1;
+      }
+    }
+    if (win) {
+      game.team = win;
+      game.state = 'over';
+    } else if (game.count < 0) {
+      game.team = other[game.team];
+      game.state = 'clue';
+      game.clue = null;
+      game.count = null;
+    }
+    io.sockets.emit('guess', {
+      game: game,
+      word: word,
+      sender: request.body.name,
+      team: request.body.team,
+      admin: false
+    });
+  }
   response.sendStatus(204);
 });
 

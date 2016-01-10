@@ -3,13 +3,13 @@
 <head>
   <title>Nodenames</title>
   <link rel="stylesheet" href="/style.css">
-  <script>var admin = {{admin}}, state = {{&state}};</script>
+  <script>var admin = {{admin}}, game = {{&game}};</script>
   <script src="/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/game.js"></script>
 </head>
 <body>
-  <form method="post" action="/commit" target="dummy">
+  <form method="post" action="/clue" target="dummy">
     <section id="header">
       <table>
         <tr>
@@ -26,7 +26,7 @@
           </td>
           <td>
             <div class="tooltip">
-              <input type="number" required placeholder="Words..." name="words">
+              <input type="number" required placeholder="Words..." name="count">
               <aside>the number of matching words (use any large number for &infin;)</aside>
             </div>
           </td>

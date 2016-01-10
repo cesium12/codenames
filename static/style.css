@@ -83,7 +83,7 @@ input + aside:before {
   position: fixed;
   top: 0;
   left: 0;
-  right: 300px;
+  right: 400px;
   height: 65px;
   background-color: lightgray;
   background-image: linear-gradient(0deg, white, transparent);
@@ -108,7 +108,7 @@ input + aside:before {
   top: 65px;
   bottom: 0;
   left: 0;
-  right: 300px;
+  right: 400px;
   overflow: auto;
 }
 
@@ -122,8 +122,11 @@ input + aside:before {
   transition: all .1s;
 }
 
-#board td:hover {
+.guessable .unrevealed {
   cursor: pointer;
+}
+
+.guessable .unrevealed:hover {
   transform: translateY(-2px);
   box-shadow: 0 3px 2px rgba(0, 0, 0, 0.5);
 }
@@ -141,14 +144,14 @@ input + aside:before {
   top: 0;
   bottom: 0;
   right: 0;
-  width: 300px;
-  background-color: #eee;
+  width: 400px;
+  color: white;
   box-sizing: border-box;
   box-shadow: inset 2px 0 3px -2px rgba(0, 0, 0, 0.5);
 }
 
 #name {
-  width: 200px;
+  width: 300px;
 }
 
 .team {
@@ -205,8 +208,10 @@ input + aside:before {
 .sender {
   font-weight: bold;
   text-align: right;
+  padding-right: 5px;
+  vertical-align: top;
 }
 
-.admin .sender {
+.admin {
   font-style: italic;
 }

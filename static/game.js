@@ -1,7 +1,7 @@
 var COLORS = {
   red: 'tomato',
-  blue: 'powderblue',
-  neutral: 'beige',
+  blue: 'skyblue',
+  neutral: 'tan',
   assassin: 'gray'
 };
 
@@ -25,7 +25,7 @@ if ('team' in localStorage && localStorage.team in COLORS) {
 }
 $('.team').change(function() {
   localStorage.team = $(this).attr('id');
-  // TODO rerender?
+  render();
 });
 
 function chatScroll(insert) {
@@ -42,12 +42,42 @@ function chatScroll(insert) {
     }
   };
 }
+function chatMessage(sender, message, data) {
+  $('<tr>').append(sender.addClass('sender')
+                         .toggleClass('admin', data.admin)
+                         .css('color', COLORS[data.team]))
+           .append(message.addClass('message'))
+           .appendTo(chatbody);
+}
 $(window).resize(chatScroll(function() {})).resize();
 event.on('chat', chatScroll(function(data) {
-  $('<tr>').append($('<td>').text(data.sender).addClass('sender'))
-           .append($('<td>').text(data.message).addClass('message'))
-           .toggleClass('admin', data.admin)
-           .appendTo(chatbody);
+  chatMessage(
+      $('<td>').text(data.sender),
+      $('<td>').text(data.message),
+      data);
+}));
+event.on('clue', chatScroll(function(data) {
+  chatMessage(
+      $('<td>').text(data.sender),
+      $('<td>').append(
+          'clued ',
+          $('<strong>').text(data.game.clue),
+          ' for ',
+          $('<strong>').text(data.game.count)),
+      data);
+  game = data.game;
+  render();
+}));
+event.on('guess', chatScroll(function(data) {
+  chatMessage(
+      $('<td>').text(data.sender),
+      !data.word ? $('<td>').text('passed') : $('<td>').append(
+          'guessed ',
+          $('<strong>').text(data.word.word)
+                       .css('color', COLORS[data.word.identity])),
+      data);
+  game = data.game;
+  render();
 }));
 chattext.keypress(function(evt) {
   if (evt.which == 13) {
@@ -55,6 +85,7 @@ chattext.keypress(function(evt) {
     if (chattext.val().trim()) {
       event.emit('say', {
         sender: localStorage.name,
+        team: localStorage.team,
         message: chattext.val(),
         admin: admin
       });
@@ -63,18 +94,36 @@ chattext.keypress(function(evt) {
   }
 });
 
+$(document).on('click', '.guessable .unrevealed', function() {
+  $.post('/guess', {
+    index: $(this).data('index'),
+    team: localStorage.team,
+    name: localStorage.name
+  });
+});
+
 function render() {
   board.empty();
   for (var i = 0; i < 5; ++i) {
     var row = $('<tr>').appendTo(board);
     for (var j = 0; j < 5; ++j) {
-      var data = state.words[5 * i + j];
-      var cell = $('<td>').text(data.word).addClass('shadow').appendTo(row);
+      var data = game.words[5 * i + j];
+      var cell = $('<td>').text(data.word)
+                          .data('index', 5 * i + j)
+                          .addClass('shadow')
+                          .appendTo(row);
       if (data.revealed || admin) {
         cell.css('background-color', COLORS[data.identity]);
+      } else {
+        cell.addClass('unrevealed');
       }
     }
   }
+  board.toggleClass('guessable',
+      game.state == 'guess' && game.team == localStorage.team);
+  $('#header').css('background-color', COLORS[game.team]);
+  // TODO disable (and clear) or enable the form
+  console.log(game.team, game.state);
 }
 render();
 

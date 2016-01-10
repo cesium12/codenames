@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <title>Nodenames</title>
+  <link rel="stylesheet" href="/style.css">
+  <script>var admin = {{admin}};</script>
+  <script src="/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/game.js"></script>
+</head>
+<body>
+  <section class="pane" id="board">
+    <table>
+    {{#board}}
+      <tr>
+      {{#row}}
+        <td class="shadow">
+        {{word}}
+        </td>
+      {{/row}}
+      </tr>
+    {{/board}}
+    </table>
+  </section>
+  <section class="pane" id="control">
+    <section id="wrapper">
+      <section id="self">
+        Wordlist: {{wordlist}}<br>
+        <input type="text" required placeholder="Your name..." class="shadow" id="name"><!--
+        --><input type="radio" class="team" name="team" id="red"><!--
+        --><label for="red" class="shadow"></label><!--
+        --><input type="radio" class="team" name="team" id="blue"><!--
+        --><label for="blue" class="shadow"></label>
+      </section>
+      <section id="chatbox">
+        <table>
+          <tbody></tbody>
+        </table>
+        <form>
+          <input type="text" placeholder="Chat..." class="shadow" id="message" name="message">
+        </form>
+      </section>
+    </section>
+  </section>
+</body>
+</html>

@@ -5,11 +5,19 @@ html, body {
   font-family: sans-serif;
 }
 
-input[type=text] {
+body > * > table {
+  width: 100%;
+  height: 100%;
+  table-layout: fixed;
+  text-align: center;
+}
+
+input[type=text], input[type=number] {
   border: 0;
   height: 25px;
   padding: 0 5px;
   box-sizing: border-box;
+  vertical-align: top;
 }
 
 input:invalid:placeholder-shown          { color: red; }
@@ -21,49 +29,69 @@ input:invalid:-ms-input-placeholder      { color: red; }
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.pane {
+#header {
   position: fixed;
   top: 0;
-  bottom: 0;
+  left: 0;
+  right: 300px;
+  height: 65px;
+  background-color: lightgray;
+  font-size: 25px;
+  line-height: 25px;
+}
+
+#header table {
+  padding: 0 20px;
+}
+
+#header td:first-of-type {
+  text-align: left;
+}
+
+#header td:last-of-type {
+  text-align: right;
 }
 
 #board {
+  position: fixed;
+  top: 65px;
+  bottom: 0;
   left: 0;
   right: 300px;
-  background-color: lightgray;
 }
 
 #board table {
-  width: 100%;
-  height: 100%;
-  table-layout: fixed;
-  text-align: center;
-  border-spacing: 25px;
+  border-spacing: 20px;
 }
 
 #board td {
   padding: 10px;
   border-radius: 5px;
-  background-color: white;
+  background-color: lightgray;
 }
 
 #wrapper {
   position: absolute;
-  top: 25px;
-  bottom: 25px;
-  left: 25px;
-  right: 25px;
+  top: 20px;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
 }
 
 #control {
+  position: fixed;
+  top: 0;
+  bottom: 0;
   right: 0;
   width: 300px;
   box-sizing: border-box;
-  background-color: gray;
+  outline: 1px solid #666;
+  background-color: white;
+  z-index: 2;
 }
 
 #name {
-  width: 190px;
+  width: 200px;
   vertical-align: top;
 }
 
@@ -92,11 +120,11 @@ input:invalid:-ms-input-placeholder      { color: red; }
 }
 
 #red + label {
-  background-color: red;
+  background-color: tomato;
 }
 
 #blue + label {
-  background-color: blue;
+  background-color: powderblue;
 }
 
 #chatbox {
@@ -118,7 +146,6 @@ input:invalid:-ms-input-placeholder      { color: red; }
 
 .sender {
   font-weight: bold;
-  vertical-align: top;
   text-align: right;
 }
 

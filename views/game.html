@@ -9,13 +9,22 @@
   <script src="/game.js"></script>
 </head>
 <body>
-  <section class="pane" id="board">
+  <form class="shadow" id="header">
+    <table>
+      <tr>
+        <td>{{wordlist}}</td>
+        <td><input type="text" required size="32" placeholder="Clue..." name="clue"></td>
+        <td><input type="number" required placeholder="Words..." name="words"></td>
+      </tr>
+    </table>
+    <iframe></iframe>
+  </form>
+  <section id="board">
     <table></table>
   </section>
-  <section class="pane" id="control">
+  <section id="control">
     <section id="wrapper">
       <section id="self">
-        Wordlist: {{wordlist}}<br>
         <input type="text" required placeholder="Your name..." class="shadow" id="name"><!--
         --><input type="radio" class="team" name="team" id="red"><!--
         --><label for="red" class="shadow"></label><!--
@@ -27,7 +36,7 @@
           <tbody></tbody>
         </table>
         <form>
-          <input type="text" placeholder="Chat..." class="shadow" id="message" name="message">
+          <input type="text" placeholder="Chat..." class="shadow" name="message" id="message">
         </form>
       </section>
     </section>

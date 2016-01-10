@@ -1,8 +1,8 @@
 var COLORS = {
-  red: 'red',
-  blue: 'blue',
-  neutral: 'white',
-  assassin: 'black'
+  red: 'tomato',
+  blue: 'powderblue',
+  neutral: 'beige',
+  assassin: 'gray'
 };
 
 $(function() {
@@ -26,6 +26,7 @@ if ('team' in localStorage && localStorage.team in COLORS) {
 }
 $('.team').change(function() {
   localStorage.team = $(this).attr('id');
+  // TODO rerender?
 });
 
 function chatScroll(insert) {
@@ -59,15 +60,9 @@ chatform.submit(function(evt) {
     });
     chattext.val('');
   }
-  chattext.blur();
-});
-$(document).keypress(function(evt) {
-  if (evt.which == 13) {
-    chattext.focus();
-  }
 });
 
-function render(state) {
+function render() {
   board.empty();
   for (var i = 0; i < 5; ++i) {
     var row = $('<tr>').appendTo(board);
@@ -80,6 +75,6 @@ function render(state) {
     }
   }
 }
-render(state);
+render();
 
 });

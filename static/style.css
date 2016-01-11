@@ -14,7 +14,7 @@ section > table {
 
 input[type=text], input[type=number] {
   border: 0;
-  height: 25px;
+  height: 30px;
   padding: 0 5px;
   box-sizing: border-box;
   vertical-align: top;
@@ -25,7 +25,7 @@ input:invalid::-webkit-input-placeholder { color: red; }
 input:invalid::-moz-placeholder          { color: red; }
 input:invalid:-ms-input-placeholder      { color: red; }
 
-input + aside {
+aside {
   transition: opacity .25s;
   top: 100%;
   left: 0;
@@ -39,16 +39,10 @@ input + aside {
   padding: 10px;
   line-height: 1;
   border-radius: 10px;
-  margin-top: 10px;
-  opacity: 0.75;
-  pointer-events: none;
-}
-
-input:valid + aside {
   opacity: 0;
 }
 
-input + aside:before {
+aside:before {
   content: "";
   width: 0;
   height: 0;
@@ -58,6 +52,18 @@ input + aside:before {
   top: -20px;
   border: 10px solid transparent;
   border-bottom-color: black;
+}
+
+input:invalid + aside {
+  opacity: 0.75;
+  width: 150px;
+  margin: 12px auto;
+}
+
+#pass > aside {
+  opacity: 0.75;
+  width: 50px;
+  margin: -8px auto;
 }
 
 .tooltip {
@@ -83,17 +89,21 @@ input + aside:before {
   position: fixed;
   top: 0;
   left: 0;
-  right: 400px;
-  height: 65px;
+  right: 350px;
+  height: 70px;
   background-color: lightgray;
   background-image: linear-gradient(0deg, white, transparent);
   font-size: 25px;
-  line-height: 25px;
+  line-height: 30px;
   transition: background-color .25s;
 }
 
 #header table {
   padding: 0 20px;
+}
+
+#header td {
+  position: relative;
 }
 
 #header td:first-of-type {
@@ -102,6 +112,14 @@ input + aside:before {
 
 #header td:last-of-type {
   text-align: right;
+}
+
+#header sup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-size: 12px;
 }
 
 #pass {
@@ -114,7 +132,7 @@ input + aside:before {
   top: 65px;
   bottom: 0;
   left: 0;
-  right: 400px;
+  right: 350px;
   overflow: auto;
 }
 
@@ -137,6 +155,17 @@ input + aside:before {
   box-shadow: 0 3px 2px rgba(0, 0, 0, 0.5);
 }
 
+#control {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 350px;
+  background-color: #eee;
+  box-sizing: border-box;
+  box-shadow: inset 2px 0 3px -2px rgba(0, 0, 0, 0.5);
+}
+
 #wrapper {
   position: absolute;
   top: 20px;
@@ -145,18 +174,8 @@ input + aside:before {
   right: 20px;
 }
 
-#control {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 400px;
-  box-sizing: border-box;
-  box-shadow: inset 2px 0 3px -2px rgba(0, 0, 0, 0.5);
-}
-
 #name {
-  width: 300px;
+  width: 240px;
 }
 
 .team {
@@ -165,9 +184,10 @@ input + aside:before {
 
 .team + label {
   display: inline-block;
-  width: 25px;
-  height: 25px;
-  line-height: 25px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 20px;
   position: relative;
   margin-left: 5px;
   cursor: pointer;
@@ -198,7 +218,7 @@ input + aside:before {
 
 #chatbox table {
   position: absolute;
-  bottom: 25px;
+  bottom: 30px;
   padding: 5px 0;
   display: inline-block;
   width: 100%;

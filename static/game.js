@@ -15,15 +15,16 @@ var chatlist = $('#chatbox table'),
     team, name;
 
 if ('name' in localStorage) {
-  $('#name').val(localStorage.name);
+  name = localStorage.name;
+  $('#name').val(name);
 }
 $('#name').change(function() {
   name = localStorage.name = $(this).val();
-  chattext.prop('disabled', !localStorage.name);
-}).change();
+  render();
+});
 if ('team' in localStorage && localStorage.team in COLORS) {
   team = localStorage.team;
-  document.getElementById(localStorage.team).checked = true;
+  document.getElementById(team).checked = true;
 }
 $('.team').change(function() {
   team = localStorage.team = $(this).attr('id');
@@ -129,13 +130,14 @@ function render() {
     }
   }
   board.toggleClass('guessable',
-      game.state == 'guess' && game.team == team);
+      game.state == 'guess' && name && game.team == team);
   $('#header').css('background-color', COLORS[game.team]);
+  chattext.prop('disabled', !name);
 
   var form = false, pass = false;
   switch (game.state) {
     case 'guess':
-      if (!admin && game.team == team) {
+      if (!admin && name && game.team == team) {
         pass = true;
       }
       $('#clue').text(game.clue);
@@ -158,6 +160,7 @@ function render() {
   $('#header .tooltip').toggle(form);
   $('#header .clues').toggle(!form);
   $('#pass').toggle(pass);
+  $('.labels').toggle(game.state == 'guess');
   $('input.dummy').prop('disabled', !form);
 }
 render();

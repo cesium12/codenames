@@ -14,26 +14,31 @@
       <table>
         <tr>
           <td>
+            <sup>wordlist</sup>
             {{wordlist}}
             <input class="dummy" type="submit">
             <iframe class="dummy" name="dummy"></iframe>
           </td>
           <td>
+            <sup class="labels">clue</sup>
             <div class="tooltip">
               <input type="text" required size="32" placeholder="Clue..." name="clue">
-              <aside>your clue word</aside>
-            </div>
-            <div class="clues" id="clue"></div>
-          </td>
-          <td>
-            <div class="tooltip">
-              <input type="number" required placeholder="Words..." name="count">
-              <aside>the number of matching words (use any large number for &infin;)</aside>
+              <aside>a single word</aside>
             </div>
             <div class="clues">
-              <span id="count"></span>
-              <a href="#" id="pass">pass</a>
+              <span id="clue"></span>
+              <a href="#" id="pass">
+                <aside>pass</aside>
+              </a>
             </div>
+          </td>
+          <td>
+            <sup class="labels">count</sup>
+            <div class="tooltip">
+              <input type="number" required placeholder="Count..." name="count">
+              <aside>use any large number for &infin;</aside>
+            </div>
+            <div class="clues" id="count"></div>
           </td>
         </tr>
       </table>

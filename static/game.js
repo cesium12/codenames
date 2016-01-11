@@ -19,7 +19,7 @@ if ('name' in localStorage) {
   $('#name').val(name);
 }
 $('#name').change(function() {
-  name = localStorage.name = $(this).val();
+  name = localStorage.name = $(this).val().trim();
   render();
 });
 if ('team' in localStorage && localStorage.team in COLORS) {
@@ -30,6 +30,11 @@ $('.team').change(function() {
   team = localStorage.team = $(this).attr('id');
   render();
 });
+if (!name) {
+  $('#name').focus();
+} else if (!admin) {
+  chattext.focus();
+}
 
 function chatScroll(insert) {
   return function(data) {
@@ -153,7 +158,7 @@ function render() {
       }
       break;
     case 'over':
-      $('#clue').text('game over');
+      $('#clue').text(game.team + ' wins');
       $('#count').text('');
       break;
   }

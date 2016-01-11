@@ -20,6 +20,10 @@ input[type=text], input[type=number] {
   vertical-align: top;
 }
 
+input:invalid {
+  color: red;
+}
+
 input:invalid:placeholder-shown          { color: red; }
 input:invalid::-webkit-input-placeholder { color: red; }
 input:invalid::-moz-placeholder          { color: red; }

@@ -22,7 +22,7 @@
           <td>
             <sup class="labels">clue</sup>
             <div class="tooltip">
-              <input type="text" required size="32" placeholder="Clue..." name="clue">
+              <input type="text" required pattern="\S+" size="32" placeholder="Clue..." name="clue">
               <aside>a single word</aside>
             </div>
             <div class="clues">
@@ -35,7 +35,7 @@
           <td>
             <sup class="labels">count</sup>
             <div class="tooltip">
-              <input type="number" required placeholder="Count..." name="count">
+              <input type="number" required pattern="\d+" placeholder="Count..." name="count">
               <aside>use any large number for &infin;</aside>
             </div>
             <div class="clues" id="count"></div>
@@ -50,7 +50,7 @@
       <section id="wrapper">
         <div id="self">
           <div class="tooltip">
-            <input type="text" required placeholder="Your name..." name="name" id="name">
+            <input type="text" required pattern=".*\S.*" placeholder="Your name..." name="name" id="name">
             <aside>enter your name and select a team</aside>
           </div><!--
           --><input type="radio" class="team" name="team" value="red" id="red"><!--

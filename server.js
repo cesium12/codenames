@@ -63,7 +63,7 @@ app.post('/clue', function(request, response) {
   if (game.team == request.body.team && game.state == 'clue') {
     game.state = 'guess';
     game.clue = request.body.clue;
-    game.count = request.body.count;
+    game.count = Number(request.body.count);
     io.sockets.emit('clue', {
       game: game,
       sender: request.body.name,

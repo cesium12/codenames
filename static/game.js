@@ -11,20 +11,22 @@ var chatlist = $('#chatbox table'),
     chatbody = $('#chatbox tbody'),
     chattext = $('#chatbox input'),
     board = $('#board table'),
-    event = io.connect();
+    event = io.connect(),
+    team, name;
 
 if ('name' in localStorage) {
   $('#name').val(localStorage.name);
 }
 $('#name').change(function() {
-  localStorage.name = $(this).val();
+  name = localStorage.name = $(this).val();
   chattext.prop('disabled', !localStorage.name);
 }).change();
 if ('team' in localStorage && localStorage.team in COLORS) {
+  team = localStorage.team;
   document.getElementById(localStorage.team).checked = true;
 }
 $('.team').change(function() {
-  localStorage.team = $(this).attr('id');
+  team = localStorage.team = $(this).attr('id');
   render();
 });
 
@@ -84,8 +86,8 @@ chattext.keypress(function(evt) {
     evt.preventDefault();
     if (chattext.val().trim()) {
       event.emit('say', {
-        sender: localStorage.name,
-        team: localStorage.team,
+        sender: name,
+        team: team,
         message: chattext.val(),
         admin: admin
       });
@@ -94,12 +96,19 @@ chattext.keypress(function(evt) {
   }
 });
 
-$(document).on('click', '.guessable .unrevealed', function() {
+function guess(index) {
   $.post('/guess', {
-    index: $(this).data('index'),
-    team: localStorage.team,
-    name: localStorage.name
+    index: index,
+    team: team,
+    name: name
   });
+}
+$(document).on('click', '.guessable .unrevealed', function() {
+  guess($(this).data('index'));
+});
+$('#pass').click(function(evt) {
+  evt.preventDefault();
+  guess();
 });
 
 function render() {
@@ -120,10 +129,36 @@ function render() {
     }
   }
   board.toggleClass('guessable',
-      game.state == 'guess' && game.team == localStorage.team);
+      game.state == 'guess' && game.team == team);
   $('#header').css('background-color', COLORS[game.team]);
-  // TODO disable (and clear) or enable the form
-  console.log(game.team, game.state);
+
+  var form = false, pass = false;
+  switch (game.state) {
+    case 'guess':
+      if (!admin && game.team == team) {
+        pass = true;
+      }
+      $('#clue').text(game.clue);
+      $('#count').text(game.count);
+      $('#header input').val('');
+      break;
+    case 'clue':
+      if (admin && game.team == team) {
+        form = true;
+      } else {
+        $('#clue').text('waiting for spymaster...');
+        $('#count').text('');
+      }
+      break;
+    case 'over':
+      $('#clue').text('game over');
+      $('#count').text('');
+      break;
+  }
+  $('#header .tooltip').toggle(form);
+  $('#header .clues').toggle(!form);
+  $('#pass').toggle(pass);
+  $('input.dummy').prop('disabled', !form);
 }
 render();
 

@@ -12,10 +12,6 @@ section > table {
   text-align: center;
 }
 
-iframe, input[type=submit] {
-  display: none;
-}
-
 input[type=text], input[type=number] {
   border: 0;
   height: 25px;
@@ -74,6 +70,10 @@ input + aside:before {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+.dummy {
+  display: none;
+}
+
 #header, #self {
   position: relative;
   z-index: 2;
@@ -89,6 +89,7 @@ input + aside:before {
   background-image: linear-gradient(0deg, white, transparent);
   font-size: 25px;
   line-height: 25px;
+  transition: background-color .25s;
 }
 
 #header table {
@@ -101,6 +102,11 @@ input + aside:before {
 
 #header td:last-of-type {
   text-align: right;
+}
+
+#pass {
+  text-decoration: none;
+  color: blue;
 }
 
 #board {
@@ -119,7 +125,7 @@ input + aside:before {
 #board td {
   padding: 10px;
   background-color: lightgray;
-  transition: all .1s;
+  transition: transform .1s, box-shadow .1s;
 }
 
 .guessable .unrevealed {
@@ -145,7 +151,6 @@ input + aside:before {
   bottom: 0;
   right: 0;
   width: 400px;
-  color: white;
   box-sizing: border-box;
   box-shadow: inset 2px 0 3px -2px rgba(0, 0, 0, 0.5);
 }

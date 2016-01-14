@@ -15,7 +15,7 @@ var games = readdir('games', function(data) {
   for (var key in data) {
     game[key] = data[key];
   }
-  io.of('/' + game.name);
+  createNamespace(game);
   return game;
 });
 
@@ -49,7 +49,7 @@ app.post('/', function(request, response, next) {
     games[request.body.name] = new Game(request.body.name, request.body.wordlist, function() {
       response.redirect(303, '/');
     });
-    io.of('/' + request.body.name);
+    createNamespace(games[request.body.name]);
   }
 });
 
@@ -110,7 +110,13 @@ app.post('/:game/chat', function(request, response, next) {
   }
 });
 
-// TODO on join, send the history
+function createNamespace(game) {
+  io.of('/' + game.name).on('connection', function(socket) {
+    game.events.forEach(function(event) {
+      socket.emit(event.type, event);
+    });
+  });
+}
 
 function Game(name, wordlist, callback) {
   this.team = 'red';
@@ -143,19 +149,24 @@ Game.prototype.shuffle = function(list) {
     return Math.random() - 0.5;
   });
 };
-Game.prototype.log = function(type, data, callback) {
+Game.prototype.log = function(type, callback, data) {
   data.type = type;
   data.time = +new Date;
-  this.events.push(data);
+  var logged = {};
+  for (var key in data) {
+    logged[key] = data[key];
+  }
+  delete logged.game;
+  this.events.push(logged);
   this.modified = +new Date;
-  this.save(callback);
+  this.save(callback, data);
 };
-Game.prototype.save = function(callback) {
+Game.prototype.save = function(callback, data) {
   fs.writeFile(path.join('games', this.name), JSON.stringify(this), function(err) {
     if (err) {
       console.error(err);
     }
-    callback();
+    callback(data);
   });
 };
 Game.prototype.other = {
@@ -174,14 +185,14 @@ Game.prototype.doClue = function(data, callback) {
     this.state = 'guess';
     this.clue = data.clue;
     this.count = Number(data.count);
-    this.log('clue', data, function() {
-      callback({
-        game: this,
-        sender: data.name,
-        team: data.team,
-        admin: true
-      });
-    }.bind(this));
+    this.log('clue', callback, {
+      game: this,
+      clue: this.clue,
+      count: this.count,
+      sender: data.name,
+      team: data.team,
+      admin: true
+    });
   }
 };
 Game.prototype.doGuess = function(data, callback) {
@@ -215,22 +226,18 @@ Game.prototype.doGuess = function(data, callback) {
       this.clue = null;
       this.count = null;
     }
-    this.log('guess', data, function() {
-      callback({
-        game: this,
-        word: word,
-        sender: data.name,
-        team: data.team,
-        admin: false
-      });
-    }.bind(this));
+    this.log('guess', callback, {
+      game: this,
+      word: word,
+      sender: data.name,
+      team: data.team,
+      admin: false
+    });
   }
 };
 Game.prototype.doChat = function(data, callback) {
   data.admin = Boolean(data.admin);
-  this.log('chat', data, function() {
-    callback(data);
-  });
+  this.log('chat', callback, data);
 };
 
 function readdir(dir, process) {

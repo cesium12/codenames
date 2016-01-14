@@ -62,12 +62,14 @@ event.on('clue', chatScroll(function(data) {
       $('<td>').text(data.sender),
       $('<td>').append(
           'clued ',
-          $('<strong>').text(data.game.clue),
+          $('<strong>').text(data.clue),
           ' for ',
-          $('<strong>').text(data.game.count)),
+          $('<strong>').text(data.count)),
       data);
-  game = data.game;
-  render();
+  if (data.game) {
+    game = data.game;
+    render();
+  }
 }));
 event.on('guess', chatScroll(function(data) {
   chatMessage(
@@ -77,8 +79,10 @@ event.on('guess', chatScroll(function(data) {
           $('<strong>').text(data.word.word)
                        .css('color', COLORS[data.word.identity])),
       data);
-  game = data.game;
-  render();
+  if (data.game) {
+    game = data.game;
+    render();
+  }
 }));
 chattext.keypress(function(evt) {
   if (evt.which == 13) {

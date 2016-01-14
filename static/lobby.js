@@ -1,6 +1,8 @@
 $(function() {
 
-var gamelist = [];
+var gamelist = [],
+    wordlists = [],
+    wordlistmap = {};
 for (var name in games) {
   gamelist.push(games[name]);
 }
@@ -9,6 +11,10 @@ gamelist.sort(function(a, b) {
 });
 
 $.each(gamelist, function(_, game) {
+  if (!(game.wordlist in wordlistmap)) {
+    wordlists.push(game.wordlist);
+    wordlistmap[game.wordlist] = true;
+  }
   var date = new Date(game.modified);
   var thumb = $('<table>').addClass('thumb shadow');
   for (var i = 0; i < 5; ++i) {
@@ -37,5 +43,14 @@ $.each(gamelist, function(_, game) {
           $('<sub>').append(
               $('<a>').text('spymaster').attr('href', '/' + game.name + '/spymaster')))));
 });
+
+for (var i = wordlists.length - 1; i >= 0; --i) {
+  $('option').each(function(_, option) {
+    option = $(option);
+    if (option.attr('value') == wordlists[i]) {
+      option.prependTo(option.parent()).prop('selected', true);
+    }
+  });
+}
 
 });

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <title>Nodenames</title>
+  <link rel="stylesheet" href="/style.css">
+  <script>var games = {{&json}};</script>
+  <script src="/jquery.min.js"></script>
+  <script src="/constants.js"></script>
+  <script src="/lobby.js"></script>
+</head>
+<body>
+  <table id="games">
+    <tr>
+      <td colspan="6">
+        <form method="post" id="newgame">
+          <input type="text" required pattern="[^/]*[^/\s][^/]*" placeholder="New game with wordlist:" name="name">
+          <select name="wordlist">
+            {{#wordlists}}
+            <option value="{{name}}">{{name}}</option>
+            {{/wordlists}}
+          </select>
+          <input type="submit">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td><sub>name</sub></td>
+      <td></td>
+      <td><sub>wordlist</sub></td>
+      <td><sub>state</sub></td>
+      <td><sub>score</sub></td>
+      <td></td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,10 +1,3 @@
-var COLORS = {
-  red: 'tomato',
-  blue: 'skyblue',
-  neutral: 'tan',
-  assassin: 'gray'
-};
-
 $(function() {
 
 var chatlist = $('#chatbox table'),

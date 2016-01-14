@@ -32,6 +32,15 @@ app.param('game', function(request, response, next, game) {
   next();
 });
 
+app.get('/', function(request, response) {
+  response.render('lobby', {
+    wordlists: Object.keys(wordlists).map(function(key) {
+      return {name: key};
+    }),
+    json: JSON.stringify(games)
+  });
+});
+
 // TODO insert created game into the map
 //var game = new Game(name, path.basename(wordlist), words);
 

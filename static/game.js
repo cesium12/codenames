@@ -126,6 +126,9 @@ function render() {
                           .appendTo(row);
       if (data.revealed || admin) {
         cell.css('background-color', COLORS[data.identity]);
+        if (data.revealed && admin) {
+          cell.css('opacity', 0.5);
+        }
       } else {
         cell.addClass('unrevealed');
       }

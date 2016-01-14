@@ -84,11 +84,11 @@ chattext.keypress(function(evt) {
   if (evt.which == 13) {
     evt.preventDefault();
     if (chattext.val().trim()) {
-      event.emit('say', {
+      $.post('say', {
         sender: name,
         team: team,
         message: chattext.val(),
-        admin: admin
+        admin: admin ? 'admin' : ''
       });
       chattext.val('');
     }

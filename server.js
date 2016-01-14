@@ -97,14 +97,18 @@ app.post('/:game/guess', function(request, response, next) {
   }
 });
 
-io.sockets.on('connection', function(socket) {
-  socket.on('say', function(msg) {
-    // TODO chat rooms
-    io.sockets.emit('chat', msg);
-  });
+app.post('/:game/say', function(request, response, next) {
+  if (!request.game) {
+    next();
+  } else {
+    request.body.admin = Boolean(request.body.admin);
+    io.sockets.emit('chat', request.body);
+    response.sendStatus(204);
+  }
 });
 
 // TODO on join, send the history
+// TODO chat rooms
 
 function Game(name, wordlist, callback) {
   this.team = 'red';

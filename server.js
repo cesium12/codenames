@@ -41,8 +41,15 @@ app.get('/', function(request, response) {
   });
 });
 
-// TODO insert created game into the map
-//var game = new Game(name, path.basename(wordlist), words);
+app.post('/', function(request, response, next) {
+  if (request.body.name in games || !(request.body.wordlist in wordlists)) {
+    next();
+  } else {
+    games[request.body.name] = new Game(request.body.name, request.body.wordlist, function() {
+      response.redirect(303, '/');
+    });
+  }
+});
 
 app.get('/:game/player', function(request, response, next) {
   if (!request.game) {

@@ -124,11 +124,10 @@ function render() {
                           .data('index', 5 * i + j)
                           .addClass('shadow')
                           .appendTo(row);
-      if (data.revealed || admin) {
+      if (data.revealed) {
         cell.css('background-color', COLORS[data.identity]);
-        if (data.revealed && admin) {
-          cell.css('opacity', 0.5);
-        }
+      } else if (admin) {
+        cell.css('border-color', COLORS[data.identity]);
       } else {
         cell.addClass('unrevealed');
       }

@@ -86,7 +86,8 @@ a {
 }
 
 .dummy {
-  display: none;
+  position: fixed;
+  left: -1000px;
 }
 
 #games {
@@ -182,7 +183,10 @@ a {
 }
 
 #board td {
-  padding: 10px;
+  border: 0px solid transparent;
+  border-top-width: 10px;
+  padding: 15px;
+  padding-top: 5px;
   background-color: lightgray;
   transition: transform .1s, box-shadow .1s;
 }

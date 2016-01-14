@@ -84,7 +84,7 @@ chattext.keypress(function(evt) {
   if (evt.which == 13) {
     evt.preventDefault();
     if (chattext.val().trim()) {
-      $.post('say', {
+      $.post('chat', {
         sender: name,
         team: team,
         message: chattext.val(),

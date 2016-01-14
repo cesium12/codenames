@@ -99,12 +99,13 @@ app.post('/:game/guess', function(request, response, next) {
   }
 });
 
-app.post('/:game/say', function(request, response, next) {
+app.post('/:game/chat', function(request, response, next) {
   if (!request.game) {
     next();
   } else {
-    request.body.admin = Boolean(request.body.admin);
-    io.of('/' + request.game.name).emit('chat', request.body);
+    request.game.doChat(request.body, function(data) {
+      io.of('/' + request.game.name).emit('chat', data);
+    });
     response.sendStatus(204);
   }
 });
@@ -224,6 +225,12 @@ Game.prototype.doGuess = function(data, callback) {
       });
     }.bind(this));
   }
+};
+Game.prototype.doChat = function(data, callback) {
+  data.admin = Boolean(data.admin);
+  this.log('chat', data, function() {
+    callback(data);
+  });
 };
 
 function readdir(dir, process) {

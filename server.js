@@ -24,6 +24,7 @@ app.param('game', function(request, response, next, game) {
   request.game = games[game];
 });
 
+// TODO insert created game into the map
 //var game = new Game(name, path.basename(wordlist), words);
 
 app.get('/:game/play', function(request, response, next) {
@@ -54,10 +55,9 @@ app.post('/:game/clue', function(request, response, next) {
   if (!request.game) {
     next();
   } else {
-    var ret = request.game.clue(request.body);
-    if (ret) {
-      io.sockets.emit('clue', ret);
-    }
+    request.game.clue(request.body, function(data) {
+      io.sockets.emit('clue', data);
+    });
     response.sendStatus(204);
   }
 });
@@ -66,10 +66,9 @@ app.post('/:game/guess', function(request, response, next) {
   if (!request.game) {
     next();
   } else {
-    var ret = request.game.guess(request.body);
-    if (ret) {
-      io.sockets.emit('guess', ret);
-    }
+    request.game.guess(request.body, function(data) {
+      io.sockets.emit('guess', data);
+    });
     response.sendStatus(204);
   }
 });
@@ -81,10 +80,9 @@ io.sockets.on('connection', function(socket) {
   });
 });
 
-// TODO creating a game should save it
 // TODO on join, send the history
 
-function Game(name, wordlist) {
+function Game(name, wordlist, callback) {
   this.team = 'red';
   this.state = 'clue';
   this.red = 9;
@@ -107,17 +105,28 @@ function Game(name, wordlist) {
       revealed: false
     });
   }
+
+  this.save(callback);
 };
 Game.prototype.shuffle = function(list) {
   list.sort(function() {
     return Math.random() - 0.5;
   });
 };
-Game.prototype.log = function(type, data) {
+Game.prototype.log = function(type, data, callback) {
   data.type = type;
   data.time = +new Date;
   this.events.push(data);
   this.modified = +new Date;
+  this.save(callback);
+};
+Game.prototype.save = function(callback) {
+  fs.writeFile(path.join('games', this.name), JSON.stringify(this), function(err) {
+    if (err) {
+      console.error(err);
+    }
+    callback();
+  });
 };
 Game.prototype.other = {
   red: 'blue',
@@ -130,21 +139,22 @@ Game.prototype.identities = function() {
   for (var i = 0; i < 7; ++i) { identities.push('neutral'); }
   return identities;
 }();
-Game.prototype.clue = function(data) {
+Game.prototype.clue = function(data, callback) {
   if (this.team == data.team && this.state == 'clue') {
     this.state = 'guess';
     this.clue = data.clue;
     this.count = Number(data.count);
-    this.log('clue', data);
-    return {
-      game: this,
-      sender: data.name,
-      team: data.team,
-      admin: true
-    };
+    this.log('clue', data, function() {
+      callback({
+        game: this,
+        sender: data.name,
+        team: data.team,
+        admin: true
+      });
+    });
   }
 };
-Game.prototype.guess = function(data) {
+Game.prototype.guess = function(data, callback) {
   if (this.team == data.team && this.state == 'guess') {
     var word = this.words[data.index];
     var win = null;
@@ -175,14 +185,15 @@ Game.prototype.guess = function(data) {
       this.clue = null;
       this.count = null;
     }
-    this.log('guess', data);
-    return {
-      game: this,
-      word: word,
-      sender: data.name,
-      team: data.team,
-      admin: false
-    };
+    this.log('guess', data, function() {
+      callback({
+        game: this,
+        word: word,
+        sender: data.name,
+        team: data.team,
+        admin: false
+      });
+    });
   }
 };
 

@@ -4,7 +4,7 @@ var chatlist = $('#chatbox table'),
     chatbody = $('#chatbox tbody'),
     chattext = $('#chatbox input'),
     board = $('#board table'),
-    event = io.connect(),
+    event = io.connect('/' + game.name),
     team, name;
 
 if ('name' in localStorage) {

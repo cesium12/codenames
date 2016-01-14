@@ -15,6 +15,7 @@ var games = readdir('games', function(data) {
   for (var key in data) {
     game[key] = data[key];
   }
+  io.of('/' + game.name);
   return game;
 });
 
@@ -48,6 +49,7 @@ app.post('/', function(request, response, next) {
     games[request.body.name] = new Game(request.body.name, request.body.wordlist, function() {
       response.redirect(303, '/');
     });
+    io.of('/' + request.body.name);
   }
 });
 
@@ -80,7 +82,7 @@ app.post('/:game/clue', function(request, response, next) {
     next();
   } else {
     request.game.doClue(request.body, function(data) {
-      io.sockets.emit('clue', data);
+      io.of('/' + request.game.name).emit('clue', data);
     });
     response.sendStatus(204);
   }
@@ -91,7 +93,7 @@ app.post('/:game/guess', function(request, response, next) {
     next();
   } else {
     request.game.doGuess(request.body, function(data) {
-      io.sockets.emit('guess', data);
+      io.of('/' + request.game.name).emit('guess', data);
     });
     response.sendStatus(204);
   }
@@ -102,13 +104,12 @@ app.post('/:game/say', function(request, response, next) {
     next();
   } else {
     request.body.admin = Boolean(request.body.admin);
-    io.sockets.emit('chat', request.body);
+    io.of('/' + request.game.name).emit('chat', request.body);
     response.sendStatus(204);
   }
 });
 
 // TODO on join, send the history
-// TODO chat rooms
 
 function Game(name, wordlist, callback) {
   this.team = 'red';

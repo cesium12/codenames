@@ -5,10 +5,17 @@ var express = require('express'),
     path = require('path');
 
 var wordlists = readdir('wordlists', function(data) {
-  return data.split('\n').filter(function(word) { return word; });
+  return data.split('\n').filter(function(word) {
+    return word;
+  });
 });
 var games = readdir('games', function(data) {
-  return JSON.parse(data);
+  data = JSON.parse(data);
+  var game = Object.create(Game.prototype);
+  for (var key in data) {
+    game[key] = data[key];
+  }
+  return game;
 });
 
 var app = express();
@@ -22,18 +29,19 @@ var io = require('socket.io').listen(app.listen(0xc0de)); //49374
 
 app.param('game', function(request, response, next, game) {
   request.game = games[game];
+  next();
 });
 
 // TODO insert created game into the map
 //var game = new Game(name, path.basename(wordlist), words);
 
-app.get('/:game/play', function(request, response, next) {
+app.get('/:game/player', function(request, response, next) {
   if (!request.game) {
     next();
   } else {
     response.render('game', {
-      wordlist: request.game.wordlist,
-      game: JSON.stringify(request.game),
+      game: request.game,
+      json: JSON.stringify(request.game),
       admin: false
     });
   }
@@ -44,8 +52,8 @@ app.get('/:game/spymaster', function(request, response, next) {
     next();
   } else {
     response.render('game', {
-      wordlist: request.game.wordlist,
-      game: JSON.stringify(request.game),
+      game: request.game,
+      json: JSON.stringify(request.game),
       admin: true
     });
   }
@@ -55,7 +63,7 @@ app.post('/:game/clue', function(request, response, next) {
   if (!request.game) {
     next();
   } else {
-    request.game.clue(request.body, function(data) {
+    request.game.doClue(request.body, function(data) {
       io.sockets.emit('clue', data);
     });
     response.sendStatus(204);
@@ -66,7 +74,7 @@ app.post('/:game/guess', function(request, response, next) {
   if (!request.game) {
     next();
   } else {
-    request.game.guess(request.body, function(data) {
+    request.game.doGuess(request.body, function(data) {
       io.sockets.emit('guess', data);
     });
     response.sendStatus(204);
@@ -139,7 +147,7 @@ Game.prototype.identities = function() {
   for (var i = 0; i < 7; ++i) { identities.push('neutral'); }
   return identities;
 }();
-Game.prototype.clue = function(data, callback) {
+Game.prototype.doClue = function(data, callback) {
   if (this.team == data.team && this.state == 'clue') {
     this.state = 'guess';
     this.clue = data.clue;
@@ -151,10 +159,10 @@ Game.prototype.clue = function(data, callback) {
         team: data.team,
         admin: true
       });
-    });
+    }.bind(this));
   }
 };
-Game.prototype.guess = function(data, callback) {
+Game.prototype.doGuess = function(data, callback) {
   if (this.team == data.team && this.state == 'guess') {
     var word = this.words[data.index];
     var win = null;
@@ -168,7 +176,7 @@ Game.prototype.guess = function(data, callback) {
           win = word.identity;
         }
       }
-      if (word.identity == game.team) {
+      if (word.identity == this.team) {
         --this.count;
       } else if (word.identity == 'assassin') {
         win = this.other[this.team];
@@ -193,7 +201,7 @@ Game.prototype.guess = function(data, callback) {
         team: data.team,
         admin: false
       });
-    });
+    }.bind(this));
   }
 };
 

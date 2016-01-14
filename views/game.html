@@ -1,9 +1,9 @@
 <!doctype html>
 <html>
 <head>
-  <title>Nodenames</title>
+  <title>{{#game}}{{name}}{{/game}} - Nodenames</title>
   <link rel="stylesheet" href="/style.css">
-  <script>var admin = {{admin}}, game = {{&game}};</script>
+  <script>var admin = {{admin}}, game = {{&json}};</script>
   <script src="/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/game.js"></script>
@@ -15,7 +15,7 @@
         <tr>
           <td>
             <sup>wordlist</sup>
-            {{wordlist}}
+            {{#game}}{{wordlist}}{{/game}}
             <input class="dummy" type="submit">
             <iframe class="dummy" name="dummy"></iframe>
           </td>

@@ -4,7 +4,15 @@ var express = require('express'),
     fs = require('fs'),
     path = require('path');
 
+var wordlists = readdir('wordlists', function(data) {
+  return data.split('\n').filter(function(word) { return word; });
+});
+var games = readdir('games', function(data) {
+  return JSON.parse(data);
+});
+
 var app = express();
+app.set('strict routing', true);
 app.set('view engine', 'html');
 app.engine('html', require('hogy').init());
 app.use(require('body-parser').urlencoded({extended: false}));
@@ -12,43 +20,41 @@ app.use(express.static(__dirname + '/static'));
 app.use(require('morgan')('dev'))
 var io = require('socket.io').listen(app.listen(0xc0de)); //49374
 
-var wordlist = process.argv[2];
-if (!wordlist) {
-  throw 'must specify a wordlist';
-}
-var words = fs.readFileSync(wordlist, 'utf8').split('\n');
-words = words.filter(function(word) { return word; });
-var game = new Game(path.basename(wordlist), words);
+app.param('game', function(request, response, next, game) {
+  request.game = games[game];
+});
 
-app.get('/', function(request, response, next) {
-  if (!game) {
+//var game = new Game(name, path.basename(wordlist), words);
+
+app.get('/:game/play', function(request, response, next) {
+  if (!request.game) {
     next();
   } else {
     response.render('game', {
-      wordlist: game.wordlist,
-      game: JSON.stringify(game),
+      wordlist: request.game.wordlist,
+      game: JSON.stringify(request.game),
       admin: false
     });
   }
 });
 
-app.get('/spymaster', function(request, response, next) {
-  if (!game) {
+app.get('/:game/spymaster', function(request, response, next) {
+  if (!request.game) {
     next();
   } else {
     response.render('game', {
-      wordlist: game.wordlist,
-      game: JSON.stringify(game),
+      wordlist: request.game.wordlist,
+      game: JSON.stringify(request.game),
       admin: true
     });
   }
 });
 
-app.post('/clue', function(request, response, next) {
-  if (!game) {
+app.post('/:game/clue', function(request, response, next) {
+  if (!request.game) {
     next();
   } else {
-    var ret = game.clue(request.body);
+    var ret = request.game.clue(request.body);
     if (ret) {
       io.sockets.emit('clue', ret);
     }
@@ -56,11 +62,11 @@ app.post('/clue', function(request, response, next) {
   }
 });
 
-app.post('/guess', function(request, response, next) {
-  if (!game) {
+app.post('/:game/guess', function(request, response, next) {
+  if (!request.game) {
     next();
   } else {
-    var ret = game.guess(request.body);
+    var ret = request.game.guess(request.body);
     if (ret) {
       io.sockets.emit('guess', ret);
     }
@@ -71,12 +77,14 @@ app.post('/guess', function(request, response, next) {
 io.sockets.on('connection', function(socket) {
   socket.on('say', function(msg) {
     // TODO chat rooms
-    game.log('chat', msg);
     io.sockets.emit('chat', msg);
   });
 });
 
-function Game(wordlist, words) {
+// TODO creating a game should save it
+// TODO on join, send the history
+
+function Game(name, wordlist) {
   this.team = 'red';
   this.state = 'clue';
   this.red = 9;
@@ -86,12 +94,15 @@ function Game(wordlist, words) {
   this.words = [];
   this.events = [];
 
+  this.name = name;
   this.wordlist = wordlist;
-  this.shuffle(words);
+  this.created = +new Date;
+  this.modified = +new Date;
+  this.shuffle(wordlists[wordlist]);
   this.shuffle(this.identities);
   for (var i = 0; i < 25; ++i) {
     this.words.push({
-      word: words[i],
+      word: wordlists[wordlist][i],
       identity: this.identities[i],
       revealed: false
     });
@@ -106,6 +117,7 @@ Game.prototype.log = function(type, data) {
   data.type = type;
   data.time = +new Date;
   this.events.push(data);
+  this.modified = +new Date;
 };
 Game.prototype.other = {
   red: 'blue',
@@ -120,10 +132,10 @@ Game.prototype.identities = function() {
 }();
 Game.prototype.clue = function(data) {
   if (this.team == data.team && this.state == 'clue') {
-    this.log('clue', data);
     this.state = 'guess';
     this.clue = data.clue;
     this.count = Number(data.count);
+    this.log('clue', data);
     return {
       game: this,
       sender: data.name,
@@ -134,7 +146,6 @@ Game.prototype.clue = function(data) {
 };
 Game.prototype.guess = function(data) {
   if (this.team == data.team && this.state == 'guess') {
-    this.log('guess', data);
     var word = this.words[data.index];
     var win = null;
     if (!word) {
@@ -164,6 +175,7 @@ Game.prototype.guess = function(data) {
       this.clue = null;
       this.count = null;
     }
+    this.log('guess', data);
     return {
       game: this,
       word: word,
@@ -173,3 +185,28 @@ Game.prototype.guess = function(data) {
     };
   }
 };
+
+function readdir(dir, process) {
+  var out = {};
+  fs.mkdir(dir, function(err) {
+    if (err) {
+      console.error(err);
+    }
+    fs.readdir(dir, function(err, files) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      files.forEach(function(file) {
+        fs.readFile(path.join(dir, file), 'utf8', function(err, data) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          out[file] = process(data);
+        });
+      });
+    });
+  });
+  return out;
+}

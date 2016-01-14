@@ -103,7 +103,7 @@ chattext.keypress(function(evt) {
 });
 
 function guess(index) {
-  $.post('/guess', {
+  $.post('guess', {
     index: index,
     team: team,
     name: name

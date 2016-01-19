@@ -184,11 +184,13 @@ Game.prototype.doClue = function(data, callback) {
   if (this.team == data.team && this.state == 'clue') {
     this.state = 'guess';
     this.clue = data.clue;
-    this.count = Number(data.count);
+    var count = Number(data.count);
+    count = count >= this[this.team] ? null : count;
+    this.count = count <= 0 ? null : count;
     this.log('clue', callback, {
       game: this,
       clue: this.clue,
-      count: this.count,
+      count: count,
       sender: data.name,
       team: data.team,
       admin: true
@@ -210,7 +212,9 @@ Game.prototype.doGuess = function(data, callback) {
         }
       }
       if (word.identity == this.team) {
-        --this.count;
+        if (this.count !== null) {
+          --this.count;
+        }
       } else if (word.identity == 'assassin') {
         win = this.other[this.team];
       } else {

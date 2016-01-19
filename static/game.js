@@ -48,6 +48,7 @@ function chatMessage(sender, message, data) {
                          .toggleClass('admin', data.admin)
                          .css('color', COLORS[data.team]))
            .append(message.addClass('message'))
+           .attr('title', new Date(data.time).toLocaleString())
            .appendTo(chatbody);
 }
 $(window).resize(chatScroll(function() {})).resize();
@@ -64,7 +65,7 @@ event.on('clue', chatScroll(function(data) {
           'clued ',
           $('<strong>').text(data.clue),
           ' for ',
-          $('<strong>').text(data.count)),
+          $('<strong>').text(data.count === null ? '∞' : data.count)),
       data);
   if (data.game) {
     game = data.game;
@@ -145,7 +146,7 @@ function render() {
         pass = true;
       }
       $('#clue').text(game.clue);
-      $('#count').text(game.count);
+      $('#count').text(game.count === null ? '∞' : game.count);
       $('#header input').val('');
       break;
     case 'clue':

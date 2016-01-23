@@ -22,6 +22,7 @@ var games = readdir('games', function(data) {
 var app = express();
 app.set('strict routing', true);
 app.set('view engine', 'html');
+app.set('views', __dirname + '/views');
 app.engine('html', require('hogy').init());
 app.use(require('body-parser').urlencoded({extended: false}));
 app.use(express.static(__dirname + '/static'));
